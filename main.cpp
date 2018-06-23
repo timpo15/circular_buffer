@@ -3,6 +3,12 @@
 #include <algorithm>
 #include "Circular_buffer.h"
 
+template<typename C, typename T>
+void mass_push_back(C &c, std::initializer_list<T> elems) {
+    for (T const &e : elems)
+        c.push_back(e);
+}
+
 bool test_simple1() {
     size_t counts = 1000;
     circular_buffer<int> cb(1);
@@ -113,17 +119,13 @@ bool test_simple5() {
 
 
 bool test_simple6() {
-    size_t counts = 1000;
+    size_t counts = 10;
     circular_buffer<int> cb(1);
     std::vector<int> ans;
     for (size_t i = 0; i < counts; ++i) {
         cb.insert(cb.end(), i);
         ans.push_back(i);
     }
-    for (size_t i = 0; i < counts; ++i) {
-        std::cout << cb[i] << " ";
-    }
-    std::cout << std::endl;
     for (size_t i = 0; i < counts; i++) {
         std::cout << cb[i] << " ";
 //        if (ans[i] != cb[i])
@@ -146,8 +148,8 @@ bool test_simple7() {
     reverse(ans.begin(), ans.end());
     for (size_t i = 0; i < counts; i++) {
         std::cout << cb[i] << " ";
-//        if (ans[i] != cb[i])
-//            return false;
+        if (ans[i] != cb[i])
+            return false;
     }
     std::cout << std::endl;
     return true;
@@ -259,47 +261,55 @@ bool test_simple12() {
 }
 
 int main() {
-    if (!test_simple1()) {
-        throw std::runtime_error("test1 - push_front");
-    }
-    if (!test_simple2()) {
-        throw std::runtime_error("test2 - push_back");
-    }
-    if (!test_simple3()) {
-        throw std::runtime_error("test3 - pop_front");
-    }
-    if (!test_simple4()) {
-        throw std::runtime_error("test4 - pop_ back");
-    }
-    if (!test_simple5()) {
-        throw std::runtime_error("test5 - push_pop");
-    }
+//    if (!test_simple1()) {
+//        throw std::runtime_error("test1 - push_front");
+//    }
+//    if (!test_simple2()) {
+//        throw std::runtime_error("test2 - push_back");
+//    }
+//    if (!test_simple3()) {
+//        throw std::runtime_error("test3 - pop_front");
+//    }
+//    if (!test_simple4()) {
+//        throw std::runtime_error("test4 - pop_ back");
+//    }
+//    if (!test_simple5()) {
+//        throw std::runtime_error("test5 - push_pop");
+//    }
 
-    if (!test_simple6()) {
-        throw std::runtime_error("test6 - insert end");
+//    if (!test_simple6()) {
+//        throw std::runtime_error("test6 - insert end");
+//    }
+//    if (!test_simple7()) {
+//        throw std::runtime_error("test7 - insert begin");
+//    }
+//    if (!test_simple8()) {
+//        throw std::runtime_error("test8 - insert begin -end");
+//    }
+//
+//    if (!test_simple9()) {
+//        throw std::runtime_error("test9 - iterator test");
+//    }
+//    if (!test_simple10()) {
+//        throw std::runtime_error("test10 - reverse iterator test");
+//    }
+//    if (!test_simple11()) {
+//        throw std::runtime_error("test11 - erase test");
+//    }
+//    if (!test_simple12()) {
+//        throw std::runtime_error("test12 - erase2 test");
+//    }
+//
+//    circular_buffer<int> cb;
+//    circular_buffer<int>::const_iterator it = cb.end();
+//    std::cout << (cb.end() == it);
+//    std::cout << (cb.begin() == cb.end());
+    using container = circular_buffer<int>;
+    container c;
+    mass_push_back(c, {1, 2, 3, 4});
+    container c2(c);
+    c[0] = 100;
+    for (size_t i = 0; i < 4; ++i) {
+        std::cout << c2[i];
     }
-    if (!test_simple7()) {
-        throw std::runtime_error("test7 - insert begin");
-    }
-    if (!test_simple8()) {
-        throw std::runtime_error("test8 - insert begin -end");
-    }
-
-    if (!test_simple9()) {
-        throw std::runtime_error("test9 - iterator test");
-    }
-    if (!test_simple10()) {
-        throw std::runtime_error("test10 - reverse iterator test");
-    }
-    if (!test_simple11()) {
-        throw std::runtime_error("test11 - erase test");
-    }
-    if (!test_simple12()) {
-        throw std::runtime_error("test12 - erase2 test");
-    }
-
-    circular_buffer<int> cb;
-    circular_buffer<int>::iterator const it = cb.end();
-    std::cout << (cb.end() != it);
-    std::cout << (cb.begin() == cb.end());
 }
