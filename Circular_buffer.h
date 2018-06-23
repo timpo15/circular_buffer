@@ -100,7 +100,7 @@ struct circular_buffer<T>::basic_iterator {
     using pointer = V *;
     using reference = V &;
 
-    basic_iterator();
+    basic_iterator() = default;
 
     basic_iterator(T *data, uint64_t ind, size_t capacity) : data_(data), ind_(ind), capacity_(capacity) {}
 

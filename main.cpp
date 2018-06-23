@@ -298,5 +298,5 @@ int main() {
         throw std::runtime_error("test12 - erase2 test");
     }
 
-
+    circular_buffer<int>::iterator it;
 }
