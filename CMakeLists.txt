@@ -3,7 +3,7 @@ project(Circular_buffer)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -fsanitize=address --std=c++17")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -fsanitize=address,undefined,return --std=c++17")
 add_executable(Circular_buffer_simple main.cpp Circular_buffer.h)
 add_executable(Circular_buffer_hard testing.cpp
         Circular_buffer.h

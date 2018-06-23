@@ -22,9 +22,9 @@ bool test_simple1() {
     for (size_t i = 0; i < counts; i++) {
         if (ans[i] != cb[i])
             return false;
-        std::cout << cb[i] << " ";
+//        std::cout << cb[i] << " ";
     }
-    std::cout << std::endl;
+//    std::cout << std::endl;
     return true;
 }
 
@@ -40,9 +40,9 @@ bool test_simple2() {
     for (size_t i = 0; i < counts; i++) {
         if (ans[i] != cb[i])
             return false;
-        std::cout << cb[i] << " ";
+//        std::cout << cb[i] << " ";
     }
-    std::cout << std::endl;
+//    std::cout << std::endl;
     return true;
 
 }
@@ -60,9 +60,9 @@ bool test_simple3() {
         if (ans[i] != cb.front())
             return false;
         cb.pop_front();
-        std::cout << cb[i] << " ";
+//        std::cout << cb[i] << " ";
     }
-    std::cout << std::endl;
+//    std::cout << std::endl;
     return true;
 
 }
@@ -77,12 +77,12 @@ bool test_simple4() {
         ans.push_back(i);
     }
     for (size_t i = 0; i < counts; i++) {
-        std::cout << cb.back() << " ";
+//        std::cout << cb.back() << " ";
         if (ans[i] != cb.back())
             return false;
         cb.pop_back();
     }
-    std::cout << std::endl;
+//    std::cout << std::endl;
     return true;
 }
 
@@ -113,7 +113,7 @@ bool test_simple5() {
     }
     if (!cb.empty())
         return false;
-    std::cout << std::endl;
+//    std::cout << std::endl;
     return true;
 }
 
@@ -127,11 +127,11 @@ bool test_simple6() {
         ans.push_back(i);
     }
     for (size_t i = 0; i < counts; i++) {
-        std::cout << cb[i] << " ";
-//        if (ans[i] != cb[i])
-//            return false;
+//        std::cout << cb[i] << " ";
+        if (ans[i] != cb[i])
+            return false;
     }
-    std::cout << std::endl;
+//    std::cout << std::endl;
     return true;
 }
 
@@ -147,11 +147,11 @@ bool test_simple7() {
 
     reverse(ans.begin(), ans.end());
     for (size_t i = 0; i < counts; i++) {
-        std::cout << cb[i] << " ";
+//        std::cout << cb[i] << " ";
         if (ans[i] != cb[i])
             return false;
     }
-    std::cout << std::endl;
+//    std::cout << std::endl;
     return true;
 }
 
@@ -169,16 +169,16 @@ bool test_simple8() {
         }
     }
 
-    for (size_t i = 0; i < counts; ++i) {
-        std::cout << cb[i] << " ";
-    }
-    std::cout << std::endl;
+//    for (size_t i = 0; i < counts; ++i) {
+//        std::cout << cb[i] << " ";
+//    }
+//    std::cout << std::endl;
     for (size_t i = 0; i < counts; i++) {
-        std::cout << cb[i] << " ";
+//        std::cout << cb[i] << " ";
         if (ans[i] != cb[i])
             return false;
     }
-    std::cout << std::endl;
+//    std::cout << std::endl;
     return true;
 }
 
@@ -202,7 +202,7 @@ bool test_simple9() {
         if (ans[i++] != *t)
             return false;
     }
-    std::cout << std::endl;
+//    std::cout << std::endl;
     return true;
 }
 
@@ -216,11 +216,11 @@ bool test_simple10() {
     }
     size_t i = 0;
     for (auto t = cb.rbegin(); t != cb.rend(); ++t) {
-        std::cout << *t << " ";
+//        std::cout << *t << " ";
         if (ans[counts - i++ - 1] != *t)
             return false;
     }
-    std::cout << std::endl;
+//    std::cout << std::endl;
     return true;
 }
 
@@ -261,45 +261,69 @@ bool test_simple12() {
 }
 
 int main() {
-//    if (!test_simple1()) {
-//        throw std::runtime_error("test1 - push_front");
-//    }
-//    if (!test_simple2()) {
-//        throw std::runtime_error("test2 - push_back");
-//    }
-//    if (!test_simple3()) {
-//        throw std::runtime_error("test3 - pop_front");
-//    }
-//    if (!test_simple4()) {
-//        throw std::runtime_error("test4 - pop_ back");
-//    }
-//    if (!test_simple5()) {
-//        throw std::runtime_error("test5 - push_pop");
-//    }
+    if (!test_simple1()) {
+        throw std::runtime_error("test1 - push_front");
+    } else {
+        std::cout << "test1 passed" << std::endl;
+    }
+    if (!test_simple2()) {
+        throw std::runtime_error("test2 - push_back");
+    } else {
+        std::cout << "test2 passed" << std::endl;
+    }
+    if (!test_simple3()) {
+        throw std::runtime_error("test3 - pop_front");
+    } else {
+        std::cout << "test3 passed" << std::endl;
+    }
+    if (!test_simple4()) {
+        throw std::runtime_error("test4 - pop_ back");
+    } else {
+        std::cout << "test4 passed" << std::endl;
+    }
+    if (!test_simple5()) {
+        throw std::runtime_error("test5 - push_pop");
+    } else {
+        std::cout << "test5 passed" << std::endl;
+    }
 
-//    if (!test_simple6()) {
-//        throw std::runtime_error("test6 - insert end");
-//    }
-//    if (!test_simple7()) {
-//        throw std::runtime_error("test7 - insert begin");
-//    }
-//    if (!test_simple8()) {
-//        throw std::runtime_error("test8 - insert begin -end");
-//    }
-//
-//    if (!test_simple9()) {
-//        throw std::runtime_error("test9 - iterator test");
-//    }
-//    if (!test_simple10()) {
-//        throw std::runtime_error("test10 - reverse iterator test");
-//    }
-//    if (!test_simple11()) {
-//        throw std::runtime_error("test11 - erase test");
-//    }
-//    if (!test_simple12()) {
-//        throw std::runtime_error("test12 - erase2 test");
-//    }
-//
+    if (!test_simple6()) {
+        throw std::runtime_error("test6 - insert end");
+    } else {
+        std::cout << "test6 passed" << std::endl;
+    }
+    if (!test_simple7()) {
+        throw std::runtime_error("test7 - insert begin");
+    } else {
+        std::cout << "test7 passed" << std::endl;
+    }
+    if (!test_simple8()) {
+        throw std::runtime_error("test8 - insert begin -end");
+    } else {
+        std::cout << "test8 passed" << std::endl;
+    }
+
+    if (!test_simple9()) {
+        throw std::runtime_error("test9 - iterator test");
+    } else {
+        std::cout << "test9 passed" << std::endl;
+    }
+    if (!test_simple10()) {
+        throw std::runtime_error("test10 - reverse iterator test");
+    } else {
+        std::cout << "test10 passed" << std::endl;
+    }
+    if (!test_simple11()) {
+        throw std::runtime_error("test11 - erase test");
+    } else {
+        std::cout << "test11 passed" << std::endl;
+    }
+    if (!test_simple12()) {
+        throw std::runtime_error("test12 - erase2 test");
+    } else {
+        std::cout << "test12 passed" << std::endl;
+    }
+
 //    circular_buffer<int> cb;
 //    circular_buffer<int>::const_iterator it = cb.end();
 //    std::cout << (cb.end() == it);
@@ -309,7 +333,4 @@ int main() {
     mass_push_back(c, {1, 2, 3, 4});
     container c2(c);
     c[0] = 100;
-    for (size_t i = 0; i < 4; ++i) {
-        std::cout << c2[i];
-    }
 }

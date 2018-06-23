@@ -310,11 +310,10 @@ void circular_buffer<T>::clear() {
 
 template<typename T>
 typename circular_buffer<T>::iterator circular_buffer<T>::insert(basic_iterator<T> pos, T const &value) {
-//    size_t length_begin = begin() < pos ? pos - begin() : capacity_ - pos  + begin();
-    size_t length_begin = 0;
+    size_t length_begin = pos.get_ind() >= begin_ ? pos.get_ind() - begin_ : pos.get_ind() + (capacity_ - begin_);
+//    size_t length_begin = 0;.
     if (length_begin <= size_ / 2) {
         int64_t pos_ind = pos.get_ind() >= begin_ ? pos.get_ind() - begin_ : pos.get_ind() + (capacity_ - begin_);
-
         push_front(value);
         iterator it = begin();
         using std::swap;
@@ -325,7 +324,7 @@ typename circular_buffer<T>::iterator circular_buffer<T>::insert(basic_iterator<
         return it;
 
     } else {
-        int64_t pos_ind = pos.get_ind() < (begin_ + size_) % capacity_ ? (begin_ + size_) % capacity_ - pos.get_ind() :
+        int64_t pos_ind = pos.get_ind() <= (begin_ + size_) % capacity_ ? (begin_ + size_) % capacity_ - pos.get_ind() :
                           capacity_ - pos.get_ind() + (begin_ + size_) % capacity_;
         push_back(value);
         iterator it = end();
@@ -334,21 +333,22 @@ typename circular_buffer<T>::iterator circular_buffer<T>::insert(basic_iterator<
             swap(*it, *(it - 1));
             --it;
         }
+        return it;
     }
+
 }
 
 template<typename T>
 typename circular_buffer<T>::iterator circular_buffer<T>::erase(iterator pos) {
     size_t ind = pos.get_ind();
+    size_t length_begin = pos.get_ind() >= begin_ ? pos.get_ind() - begin_ : pos.get_ind() + (capacity_ - begin_);
     iterator cur = iterator(data_, ind, capacity_);
-    size_t len = 0;
-    if (len <= size_) {
+    if (length_begin <= size_ / 2) {
         while (cur != begin()) {
             *cur = *(cur - 1);
             cur--;
         }
         pop_front();
-        return iterator(data_, (ind + 1) % capacity_, capacity_);
     } else {
         while (cur != --end()) {
             *cur = *(cur + 1);
@@ -356,7 +356,8 @@ typename circular_buffer<T>::iterator circular_buffer<T>::erase(iterator pos) {
         }
         pop_back();
     }
-    return iterator(data_, ind, capacity_);
+    return iterator(data_, (ind + 1) % capacity_, capacity_);
+
 }
 
 template<typename T>
