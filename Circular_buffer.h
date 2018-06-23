@@ -338,12 +338,18 @@ typename circular_buffer<T>::const_iterator circular_buffer<T>::begin() const {
 
 template<typename T>
 typename circular_buffer<T>::iterator circular_buffer<T>::end() {
-    return basic_iterator<T>(data_,(static_cast<uint64_t >(begin_ + size_)) % capacity_, capacity_);
+    if (capacity_ == 0) {
+        return basic_iterator<T>(data_,(static_cast<uint64_t >(begin_ + size_)), capacity_);
+    }
+    else return basic_iterator<T>(data_,(static_cast<uint64_t >(begin_ + size_)) % capacity_, capacity_);
 }
 
 template<typename T>
 typename circular_buffer<T>::const_iterator circular_buffer<T>::end() const {
-    return basic_iterator<T>(data_, (static_cast<uint64_t >(begin_ + size_) -1 ) % capacity_, capacity_);
+    if (capacity_ == 0) {
+        return basic_iterator<T>(data_,(static_cast<uint64_t >(begin_ + size_)), capacity_);
+    }
+    else return basic_iterator<T>(data_,(static_cast<uint64_t >(begin_ + size_)) % capacity_, capacity_);
 }
 
 template<typename T>

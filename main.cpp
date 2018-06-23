@@ -298,5 +298,8 @@ int main() {
         throw std::runtime_error("test12 - erase2 test");
     }
 
-    circular_buffer<int>::iterator it;
+    circular_buffer<int> cb;
+    circular_buffer<int>::iterator const it = cb.end();
+    std::cout << (cb.end() != it);
+    std::cout << (cb.begin() == cb.end());
 }
