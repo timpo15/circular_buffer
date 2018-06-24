@@ -63,9 +63,7 @@ public:
 
     T const &operator[](size_t index) const;
 
-    size_t size() {
-        return size_;
-    }
+    size_t size();
 
     bool empty();
 
@@ -374,7 +372,7 @@ typename circular_buffer<T>::iterator circular_buffer<T>::erase(const_iterator p
         }
         pop_front();
     } else {
-        while (cur != --end()) {
+        while (cur != end() - 1) {
             *cur = *(cur + 1);
             cur++;
         }
@@ -437,6 +435,11 @@ void circular_buffer<T>::swap(circular_buffer<Q> &other) {
     std::swap(begin_, other.begin_);
     std::swap(size_, other.size_);
     std::swap(capacity_, other.capacity_);
+}
+
+template<typename T>
+size_t circular_buffer<T>::size() {
+    return size_;
 }
 
 template<typename T>
