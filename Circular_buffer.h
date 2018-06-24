@@ -67,9 +67,9 @@ public:
 
     void clear();
 
-    iterator insert(iterator pos, T const &value);
+    iterator insert(const_iterator pos, T const &value);
 
-    iterator erase(iterator pos);
+    iterator erase(const_iterator pos);
 
     iterator begin();
 
@@ -327,7 +327,7 @@ void circular_buffer<T>::clear() {
 }
 
 template<typename T>
-typename circular_buffer<T>::iterator circular_buffer<T>::insert(basic_iterator<T> pos, T const &value) {
+typename circular_buffer<T>::iterator circular_buffer<T>::insert(const_iterator pos, T const &value) {
     size_t length_begin = pos.get_ind() >= begin_ ? pos.get_ind() - begin_ : pos.get_ind() + (capacity_ - begin_);
 //    size_t length_begin = 0;.
     if (length_begin <= size_ / 2) {
@@ -358,7 +358,7 @@ typename circular_buffer<T>::iterator circular_buffer<T>::insert(basic_iterator<
 }
 
 template<typename T>
-typename circular_buffer<T>::iterator circular_buffer<T>::erase(iterator pos) {
+typename circular_buffer<T>::iterator circular_buffer<T>::erase(const_iterator pos) {
     size_t ind = pos.get_ind();
     size_t length_begin = ind >= begin_ ? ind - begin_ : ind + (capacity_ - begin_);
     iterator cur = iterator(data_, ind, capacity_);
