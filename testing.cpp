@@ -416,6 +416,15 @@ TEST(correctness, swap_empty) {
     EXPECT_TRUE(c2.empty());
 }
 
+TEST(correctness, insert_close_end) {
+    counted::no_new_instances_guard g;
+
+    container c;
+    mass_push_back(c, {1,2,3,4,5,6});
+    c.insert(std::next(c.begin(), 4), 42);
+    expect_eq(c, {1, 2, 3, 4, 42, 5, 6});
+}
+
 TEST(correctness, swap_empty_empty) {
     counted::no_new_instances_guard g;
 

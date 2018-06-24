@@ -63,6 +63,10 @@ public:
 
     T const &operator[](size_t index) const;
 
+    size_t size() {
+        return size_;
+    }
+
     bool empty();
 
     void clear();
@@ -90,6 +94,7 @@ public:
     template<typename Q>
     void swap(circular_buffer<Q> &other);
 };
+
 
 template<typename T>
 template<typename V>
@@ -329,7 +334,7 @@ void circular_buffer<T>::clear() {
 template<typename T>
 typename circular_buffer<T>::iterator circular_buffer<T>::insert(const_iterator pos, T const &value) {
     size_t length_begin = pos.get_ind() >= begin_ ? pos.get_ind() - begin_ : pos.get_ind() + (capacity_ - begin_);
-//    size_t length_begin = 0;.
+//    size_t length_begin = 0;
     if (length_begin <= size_ / 2) {
         int64_t pos_ind = pos.get_ind() >= begin_ ? pos.get_ind() - begin_ : pos.get_ind() + (capacity_ - begin_);
         push_front(value);
@@ -346,7 +351,7 @@ typename circular_buffer<T>::iterator circular_buffer<T>::insert(const_iterator 
         int64_t pos_ind = pos.get_ind() <= temp ? temp - pos.get_ind() :
                           capacity_ - pos.get_ind() + temp;
         push_back(value);
-        iterator it = end();
+        iterator it = end() - 1;
         using std::swap;
         for (size_t i = 0; i < pos_ind; ++i) {
             swap(*it, *(it - 1));
