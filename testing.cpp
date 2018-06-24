@@ -503,7 +503,7 @@ TEST(fault_injection, assignment_operator) {
 
 TEST(fault_injection, copy_ctr) {
     faulty_run([] {
-//        counted::no_new_instances_guard g;
+        counted::no_new_instances_guard g;
 
         container c;
         mass_push_back(c, {1, 2, 3, 4});

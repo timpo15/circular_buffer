@@ -233,19 +233,19 @@ circular_buffer<T>::~circular_buffer() {
 }
 
 template<typename T>
-circular_buffer<T>::circular_buffer(const circular_buffer<T> &other):  size_(0), begin_(other.begin_),
-                                                                       capacity_(other.capacity_), data_(nullptr) {
+circular_buffer<T>::circular_buffer(const circular_buffer<T> &other):  size_(0), begin_(0),
+                                                                       capacity_(other.capacity_ + 4), data_(nullptr) {
     if (capacity_ == 0)
         return;
 //    std::uninitialized_fill(other.begin(), other.end(), data_);
-    data_ = static_cast<T *>(operator new(sizeof(T) * capacity_ + 4));
+    data_ = static_cast<T *>(operator new(sizeof(T) * capacity_));
     try {
         for (size_t i = 0; i < other.size_; ++i) {
             push_back(other[i]);
         }
     } catch (...) {
         destroy_objects();
-        delete data_;
+        operator delete(data_);
         throw;
     }
 }
