@@ -6,7 +6,6 @@
 #include <sys/mman.h>
 
 namespace {
-    size_t  i = 0;
 
     template<typename T>
     struct mmap_allocator {
@@ -95,7 +94,6 @@ void faulty_run(std::function<void()> const &f) {
             f();
         }
         catch (...) {
-            fault_injection_disable dg;
             dump_state();
             ctx.skip_ranges.resize(ctx.error_index);
             ++ctx.skip_ranges.back();
@@ -121,9 +119,8 @@ fault_injection_disable::~fault_injection_disable() {
 }
 
 void *operator new(std::size_t count) {
-    if (should_inject_fault() && i > 3)
+    if (should_inject_fault() )
         throw std::bad_alloc();
-    ++i;
     void *ptr = malloc(count);
     if (!ptr)
         throw std::bad_alloc();
@@ -132,9 +129,8 @@ void *operator new(std::size_t count) {
 }
 
 void *operator new[](std::size_t count) {
-    if (should_inject_fault() && i > 3)
+    if (should_inject_fault())
         throw std::bad_alloc();
-    ++i;
     void *ptr = malloc(count);
     if (!ptr)
         throw std::bad_alloc();

@@ -420,7 +420,7 @@ TEST(correctness, insert_close_end) {
     counted::no_new_instances_guard g;
 
     container c;
-    mass_push_back(c, {1,2,3,4,5,6});
+    mass_push_back(c, {1, 2, 3, 4, 5, 6});
     c.insert(std::next(c.begin(), 4), 42);
     expect_eq(c, {1, 2, 3, 4, 42, 5, 6});
 }
@@ -462,8 +462,8 @@ TEST(correctness, clear) {
     mass_push_back(c, {5, 6, 7, 8});
     expect_eq(c, {5, 6, 7, 8});
 }
-TEST(fault_injection, push_back)
-{
+
+TEST(fault_injection, push_back) {
     faulty_run([] {
         counted::no_new_instances_guard g;
 
@@ -472,8 +472,7 @@ TEST(fault_injection, push_back)
     });
 }
 
-TEST(fault_injection, push_front)
-{
+TEST(fault_injection, push_front) {
     faulty_run([] {
         counted::no_new_instances_guard g;
 
@@ -482,25 +481,35 @@ TEST(fault_injection, push_front)
     });
 }
 
-TEST(fault_injection, assignment_operator)
-{
+TEST(fault_injection, assignment_operator) {
     faulty_run([] {
-        counted::no_new_instances_guard g;
 
         container c;
         mass_push_back(c, {1, 2, 3, 4});
         container c2;
         mass_push_back(c2, {5, 6, 7, 8});
-        try
-        {
-            c2 = c;
+        try {
+            c = c2;
         }
-        catch (...)
-        {
-            expect_eq(c2, {5, 6, 7, 8});
+        catch (...) {
+            fault_injection_disable faultInjectionDisable;
+            expect_eq(c, {1, 2, 3, 4});
             throw;
         }
-        expect_eq(c2, {1, 2, 3, 4});
+        fault_injection_disable faultInjectionDisable;
+        expect_eq(c, {5, 6, 7, 8});
+    });
+}
+
+TEST(fault_injection, copy_ctr) {
+    faulty_run([] {
+//        counted::no_new_instances_guard g;
+
+        container c;
+        mass_push_back(c, {1, 2, 3, 4});
+        container c2 = c;
+        fault_injection_disable faultInjectionDisable;
+        expect_eq(c, {1, 2, 3, 4});
     });
 }
 /*
