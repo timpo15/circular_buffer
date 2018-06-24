@@ -13,8 +13,7 @@ template<typename T>
 struct circular_buffer {
 private:
     size_t size_ = 0;
-    int64_t begin_ = 0;
-    int64_t end_ = 0;
+    size_t begin_ = 0;
     size_t capacity_ = 0;
     T *data_ = nullptr;
 
@@ -28,22 +27,21 @@ private:
 public:
 
     using iterator = basic_iterator<T>;
-
     using const_iterator = basic_iterator<const T>;
-
     using reverse_iterator = std::reverse_iterator<iterator>;
-
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+
 
     circular_buffer();
 
     explicit circular_buffer(size_t const &size);
 
-    circular_buffer(circular_buffer<T> const &oth);
+    circular_buffer(circular_buffer<T> const &other);
+
+    circular_buffer &operator=(circular_buffer const &other);
 
     ~circular_buffer();
 
-    circular_buffer &operator=(circular_buffer const &other);
 
     void push_back(T const &a);
 
@@ -90,12 +88,7 @@ public:
     const_reverse_iterator rend() const;
 
     template<typename Q>
-    void swap(circular_buffer<Q> &other) {
-        std::swap(data_, other.data_);
-        std::swap(begin_, other.begin_);
-        std::swap(size_, other.size_);
-        std::swap(capacity_, other.capacity_);
-    }
+    void swap(circular_buffer<Q> &other);
 };
 
 template<typename T>
@@ -109,7 +102,7 @@ struct circular_buffer<T>::basic_iterator {
 
     basic_iterator() = default;
 
-    basic_iterator(T *data, uint64_t ind, size_t capacity) : data_(data), ind_(ind), capacity_(capacity) {}
+    basic_iterator(T *data, size_t ind, size_t capacity) : data_(data), ind_(ind), capacity_(capacity) {}
 
     template<typename U>
     basic_iterator(basic_iterator<U> const &other,
@@ -119,12 +112,6 @@ struct circular_buffer<T>::basic_iterator {
         this->capacity_ = other.capacity_;
         this->ind_ = other.ind_;
     }
-
-//    basic_iterator(basic_iterator const &oth) {
-//        this->data_ = oth.data_;
-//        this->capacity_ = oth.capacity_;
-//        this->ind_ = oth.ind_;
-//    };
 
     uint64_t get_ind() {
         return ind_;
@@ -150,7 +137,7 @@ struct circular_buffer<T>::basic_iterator {
     }
 
     basic_iterator &operator--() {
-        ind_ = (ind_ - 1 + capacity_) % capacity_;
+        ind_ = (capacity_ + ind_ - 1) % capacity_;
         return *this;
     }
 
@@ -161,7 +148,7 @@ struct circular_buffer<T>::basic_iterator {
     }
 
     basic_iterator operator-(size_t lhs) {
-        return basic_iterator<V>(data_, (ind_ - lhs + capacity_) % capacity_, capacity_);
+        return basic_iterator<V>(data_, (capacity_ + ind_ - lhs) % capacity_, capacity_);
     }
 
     basic_iterator &operator-=(size_t lhs) {
@@ -178,8 +165,22 @@ struct circular_buffer<T>::basic_iterator {
         return basic_iterator<V>(data_, (ind_ + shift) % capacity_, capacity_);
     }
 
-    bool operator<(basic_iterator<const V> const &lhs);
-//    bool operator<(basic_iterator<T> const & lhs);
+    bool operator<(basic_iterator<const V> const &lhs) {
+        return ind_ < lhs.ind_;
+    }
+
+    bool operator>(basic_iterator<const V> const &lhs) {
+        return ind_ < lhs.ind_;
+    }
+
+    bool operator>=(basic_iterator<const V> const &lhs) {
+        return ind_ < lhs.ind_;
+    }
+
+    bool operator<=(basic_iterator<const V> const &lhs) {
+        return ind_ < lhs.ind_;
+    }
+
 
     friend bool operator==(basic_iterator const &a, basic_iterator const &b) {
         return a.ind_ == b.ind_;
@@ -190,7 +191,7 @@ struct circular_buffer<T>::basic_iterator {
     }
 
 private:
-    uint64_t ind_ = 0;
+    size_t ind_ = 0;
     size_t capacity_{};
     T *data_;
     friend struct circular_buffer;
@@ -219,7 +220,7 @@ template<typename T>
 circular_buffer<T>::circular_buffer() = default;
 
 template<typename T>
-circular_buffer<T>::circular_buffer(size_t const &size) :size_(0), capacity_(size + 4), begin_(0), end_(0) {
+circular_buffer<T>::circular_buffer(size_t const &size) :size_(0), capacity_(size + 4), begin_(0) {
     data_ = static_cast<T *>(operator new(sizeof(T) * capacity_));
 }
 
@@ -230,10 +231,21 @@ circular_buffer<T>::~circular_buffer() {
 }
 
 template<typename T>
-void circular_buffer<T>::push_back(const T &a) {
-    ensure_capacity(size_ + 1);
-    new(&data_[(begin_ + size_) % capacity_]) T(a);
-    ++size_;
+circular_buffer<T>::circular_buffer(const circular_buffer<T> &other): begin_(other.begin_), size_(0),
+                                                                      capacity_(other.capacity_), data_(nullptr) {
+    if (capacity_ == 0)
+        return;
+//    std::uninitialized_fill(other.begin(), other.end(), data_);
+    try {
+        data_ = static_cast<T *>(operator new(sizeof(T) * capacity_ + 4));
+        for (size_t i = 0; i < other.size_; ++i) {
+            push_back(other[i]);
+        }
+    } catch (...) {
+        destroy_objects();
+        delete data_;
+        throw;
+    }
 }
 
 template<typename T>
@@ -244,16 +256,23 @@ circular_buffer<T> &circular_buffer<T>::operator=(circular_buffer<T> const &othe
 }
 
 template<typename T>
+void circular_buffer<T>::push_back(const T &a) {
+    ensure_capacity(size_ + 1);
+    new(&data_[(begin_ + size_) % capacity_]) T(a);
+    ++size_;
+}
+
+template<typename T>
 void circular_buffer<T>::push_front(const T &a) {
     ensure_capacity(size_ + 1);
-    new(&data_[(begin_ - 1 + capacity_) % capacity_]) T(a);
-    begin_ = (begin_ - 1 + capacity_) % capacity_;
+    new(&data_[((capacity_ + begin_) - 1) % capacity_]) T(a);
+    begin_ = ((capacity_ + begin_) - 1) % capacity_;
     ++size_;
 }
 
 template<typename T>
 void circular_buffer<T>::pop_back() {
-    data_[(begin_ + size_ - 1 + capacity_) % capacity_].~T();
+    data_[((capacity_ + begin_ + size_) - 1) % capacity_].~T();
     --size_;
 }
 
@@ -266,12 +285,12 @@ void circular_buffer<T>::pop_front() {
 
 template<typename T>
 T const &circular_buffer<T>::back() const {
-    return data_[(begin_ + size_ - 1 + capacity_) % capacity_];
+    return data_[((capacity_ + begin_ + size_) - 1) % capacity_];
 }
 
 template<typename T>
 T &circular_buffer<T>::back() {
-    return data_[(begin_ + size_ - 1 + capacity_) % capacity_];
+    return data_[((capacity_ + begin_ + size_) - 1) % capacity_];
 }
 
 template<typename T>
@@ -304,7 +323,6 @@ template<typename T>
 void circular_buffer<T>::clear() {
     destroy_objects();
     begin_ = 0;
-    end_ = 0;
     size_ = 0;
 }
 
@@ -324,8 +342,9 @@ typename circular_buffer<T>::iterator circular_buffer<T>::insert(basic_iterator<
         return it;
 
     } else {
-        int64_t pos_ind = pos.get_ind() <= (begin_ + size_) % capacity_ ? (begin_ + size_) % capacity_ - pos.get_ind() :
-                          capacity_ - pos.get_ind() + (begin_ + size_) % capacity_;
+        size_t temp = (begin_ + size_) % capacity_;
+        int64_t pos_ind = pos.get_ind() <= temp ? temp - pos.get_ind() :
+                          capacity_ - pos.get_ind() + temp;
         push_back(value);
         iterator it = end();
         using std::swap;
@@ -341,7 +360,7 @@ typename circular_buffer<T>::iterator circular_buffer<T>::insert(basic_iterator<
 template<typename T>
 typename circular_buffer<T>::iterator circular_buffer<T>::erase(iterator pos) {
     size_t ind = pos.get_ind();
-    size_t length_begin = pos.get_ind() >= begin_ ? pos.get_ind() - begin_ : pos.get_ind() + (capacity_ - begin_);
+    size_t length_begin = ind >= begin_ ? ind - begin_ : ind + (capacity_ - begin_);
     iterator cur = iterator(data_, ind, capacity_);
     if (length_begin <= size_ / 2) {
         while (cur != begin()) {
@@ -405,22 +424,14 @@ typename circular_buffer<T>::const_reverse_iterator circular_buffer<T>::rend() c
     return std::reverse_iterator<const_iterator>(begin());
 }
 
+
 template<typename T>
-circular_buffer<T>::circular_buffer(const circular_buffer<T> &other): begin_(other.begin_), size_(0),
-                                                                      capacity_(other.capacity_), data_(nullptr) {
-    if (capacity_ == 0)
-        return;
-    data_ = static_cast<T *>(operator new(sizeof(T) * capacity_ + 4));
-//    std::uninitialized_fill(other.begin(), other.end(), data_);
-    for (size_t i = 0; i < other.size_; ++i) {
-        try {
-            push_back(other[i]);
-        } catch (...) {
-            destroy_objects();
-            delete data_;
-            throw;
-        }
-    }
+template<typename Q>
+void circular_buffer<T>::swap(circular_buffer<Q> &other) {
+    std::swap(data_, other.data_);
+    std::swap(begin_, other.begin_);
+    std::swap(size_, other.size_);
+    std::swap(capacity_, other.capacity_);
 }
 
 template<typename T>

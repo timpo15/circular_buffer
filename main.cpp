@@ -333,4 +333,6 @@ int main() {
     mass_push_back(c, {1, 2, 3, 4});
     container c2(c);
     c[0] = 100;
+    std::vector<std::string> temp = {"123","456"};
+    for (auto t : temp) std::cout << t;
 }
